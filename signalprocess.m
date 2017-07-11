@@ -16,21 +16,19 @@ winrange2 = maxp2-ceil(length(hannwin)/2):maxp2+ ...
 devbrir1(winrange1) = rir1(winrange1).*hannwin;
 devbrir2(winrange2) = rir2(winrange2).*hannwin;
 
-%cutrange = min(min(winrange1),min(winrange2)):max(max(winrange1),max(winrange2));
+i = 1;
+phasr = cell(1,25);
+for j = 16384:512:28672
+    cutrange = 1:max(max(winrange1),max(winrange2))+j;
 
+    tempdevbrir1 = devbrir1(cutrange);
+    tempdevbrir2 = devbrir2(cutrange);
 
-
-for i = 1:32
-    for j = 0:2048:65536-512
-        cutrange = 1:max(max(winrange1),max(winrange2))+j;
-
-        tempdevbrir1 = devbrir1(cutrange);
-        tempdevbrir2 = devbrir2(cutrange);
-
-        freqr1 = fft(devbrir1);
-        freqr2 = fft(devbrir2);
-        phasr1 = phase(freqr1);
-        phasr2 = phase(freqr2);
-    end
-    phasr(:,:,i) = [phasr1',phasr2'];
+    freqr1 = fft(tempdevbrir1);
+    freqr2 = fft(tempdevbrir2);
+    phasr1 = phase(freqr1);
+    phasr2 = phase(freqr2);
+    phasr{i} = [phasr1',phasr2'];
+    i = i+1;
+    i
 end

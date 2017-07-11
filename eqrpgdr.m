@@ -53,7 +53,7 @@ while(length(coeff)<=16)
         clear temp;
     end
 
-    [newcoeff,newerr] = fminimax(efhandle,coeffinit,[],[],[],[],-2,+2,);
+    [newcoeff,newerr] = fminimax(efhandle,coeffinit,[],[],[],[],[],[],);
 
     if(((max(newerr)-max(olderr))/max(olderr))<delta)
         break;
@@ -61,13 +61,20 @@ while(length(coeff)<=16)
 
     olderr = newerr;
     coeff = [coeff,newcoeff];
+
 end
 
 %% APPENDiX the experation of error function for minimax algorithm('fminimax')
 
 % error function WITH UNKNOWN 'x' (anonymous)
-    for i = 1:length(freqp)
+function err = errfun(x,coeff,freqp,phred,bigsint,bigcost)
+for i = 1:length(freqp)
         err(i) = (-sin(0.5*(length(coeff)*freqp(i)+phred(i)))+bigsint{i}*[coeff,0]') ...
                  / (abs(cos(0.5*(length(coeff)*freqp(i)+phred(i)))+bigcost{i}*[coeff,0]'));
-    end
+end
+
+% non-linear constraint for test the stability
+function [c,ceq] = stbcon(x,coeff)
+    c = [];
+    ceq = isstable(fliplr([coeff,x]),[coeff,x]) - 1;
 end

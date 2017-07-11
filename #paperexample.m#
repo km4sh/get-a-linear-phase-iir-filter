@@ -1,0 +1,9 @@
+%% example 1
+
+freqp = (0:320)*pi/400;
+phred = -7.0615*freqp;
+
+maxpr = 0.98;
+
+for i = 1:5
+    PHI = 
