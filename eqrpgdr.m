@@ -28,6 +28,7 @@ olderr = inf;
 coeffinit = 0; % correct?
 lowerbd = -2;
 upperbd = +2;
+efhandle = @(x)errfun(x,coeff,freqp,phred,bigsint,bigcost);
 
 %% step 2 solve the problem
 bigsint = cell(1,length(freqp));
@@ -52,8 +53,7 @@ while(length(coeff)<=16)
         clear temp;
     end
 
-    efhandle = @(x)errfun(x,coeff,freqp,phred,bigsint,bigcost);
-    [newcoeff,newerr] = fminimax(efhandle,coeffinit,[],[],[],[],-2,+2);
+    [newcoeff,newerr] = fminimax(efhandle,coeffinit,[],[],[],[],-2,+2,);
 
     if(((max(newerr)-max(olderr))/max(olderr))<delta)
         break;
