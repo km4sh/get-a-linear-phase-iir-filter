@@ -33,7 +33,7 @@ function coeff = eqrpgdr(freqp, phred)
     coeff = 0;
     olderr = inf;
     delta = 1e-8;
-    coeffinit = 0; % correct?
+    coeffinit = zeros(1,8); % correct?
 
     bigsint = cell(1,length(freqp));
     bigcost = cell(1,length(freqp));
@@ -41,7 +41,10 @@ function coeff = eqrpgdr(freqp, phred)
     options = optimoptions(@fminimax, ...
                            'ConstraintTolerance', 1e-4, ...
                            'StepTolerance', 1e-16, ...
-                           'FunctionTolerance', 1e-32);
+                           'FunctionTolerance', 1e-4, ...
+                           'Display', 'off', ...
+                           'MaxFunctionEvaluations', 1e4, ...
+                           'MaxIterations', 1e4);
 
     %% step 2 solve the problem
     while(length(coeff)<=16)
@@ -69,10 +72,14 @@ function coeff = eqrpgdr(freqp, phred)
 
         [newcoeff,newerr] = fminimax(efhandle,coeffinit,[],[],[],[],[],[],nchandle,options);
 
-% $$$         if(((max(olderr)-max(newerr))/max(olderr))<delta)
-% $$$             ((max(olderr)-max(newerr))/max(olderr))
-% $$$             break;
-% $$$         end
+        tol = ((max(abs(2*atan(newerr))) - max(abs(2*atan(olderr)))) ...
+               / max(abs(2*atan(olderr))));
+
+        if(tol < delta)
+            fprintf('\nstep out by error evaluation never changes!\n');
+            fprintf('error tolerance fail with %12.6f\n',tol);
+            break;
+        end
 
         olderr = newerr;
         coeff = [coeff,newcoeff];
