@@ -7,6 +7,12 @@
 %      1. added the non-linear constraint.
 %      2. able to work out some coefficient.
 %
+%  issues:
+%   options trying:
+%    StepTolerance;
+%    FunctionTolerance;
+%
+%
 %  author:
 %   matt ma @scie, shanghai university
 %   mattma9209@aliyun.com
