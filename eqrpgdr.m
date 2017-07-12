@@ -27,13 +27,14 @@
 %  reference:
 %   Design and Application of Allpass Filters with Equiripple Group Delay Errors(2013);
 
-function coeff = eqrpgdr(freqp, phred)
+function [coeff,errbuf] = eqrpgdr(freqp, phred)
 
     %% step 1 initialize
     coeff = 0;
     olderr = inf;
     delta = 1e-6;
     maxerr = inf;
+    errbuf = [];
 
     bigsint = cell(1,length(freqp));
     bigcost = cell(1,length(freqp));
@@ -47,7 +48,7 @@ function coeff = eqrpgdr(freqp, phred)
                            'MaxIterations', 1e4);
 tic
     %% step 2 solve the problem
-    while(length(coeff)<16)
+    while(length(coeff)<12)
 
         % bigsint
         for i = 1:length(freqp)
@@ -94,7 +95,7 @@ tic
 
         newerr = maxerr;
         maxerr = inf;
-
+        errbuf = [errbuf,newerr];
         tol = ((max(abs(2*atan(newerr))) - max(abs(2*atan(olderr)))) ...
                / max(abs(2*atan(olderr))));
 
