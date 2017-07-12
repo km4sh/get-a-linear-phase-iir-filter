@@ -42,6 +42,12 @@ fprintf('done! now ploting them..\n');
 figure;
 n = ceil(sqrt(length(phasr)));
 for i = 1:length(phasr)
-    subplot(n,n,i);
-    plot([phasr{i}]);
+    subplot(8,4,i);
+    plot(phasr{i});
+end
+
+figure;
+for i = 1:length(phasr)
+    subplot(8,4,i);
+    plot(phasr{i}(:,1)-phasr{i}(:,2));
 end
