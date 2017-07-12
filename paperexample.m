@@ -1,7 +1,7 @@
 %% example 1
 
-freqp = (0:320)*pi/400;
+freqp = (1:512)*pi/512;
 
-phred = -7.0615*freqp;
+phred = c-max(c);
 
 coeff = eqrpgdr(freqp,phred);

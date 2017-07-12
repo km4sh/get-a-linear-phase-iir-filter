@@ -98,3 +98,12 @@ function coeff = eqrpgdr(freqp, phred)
     end
 
 end
+
+
+% 1. how to process the first element of 'coeff' (that is 0) well..
+
+% 2. constraint from line 71 to 76 is a problem..
+
+% 3. why fminimax stopped so quickly..
+
+% 4. can the first point of 'freqp' be zero..

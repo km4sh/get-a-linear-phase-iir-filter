@@ -1,7 +1,7 @@
 % data for test initialize
 coeff = rand(1,6);
-freqp = [0,0.1,0.3,0.5,0.7,0.9,1];
-phred = [-3,-5,-7,-5,-7,-9,-3];
+freqp = [0.1,0.3,0.5,0.7,0.9,1];
+phred = [-5,-7,-5,-7,-9,-3];
 
 % procedure fot test 
 N = length(coeff);
