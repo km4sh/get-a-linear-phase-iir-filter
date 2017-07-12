@@ -32,19 +32,22 @@ function coeff = eqrpgdr(freqp, phred)
     %% step 1 initialize
     coeff = 0;
     olderr = inf;
-    delta = 1e-8;
-    coeffinit = 0; % correct?
-
+    delta = 1e-16;
+    coeffinit = 1; % correct?
+    maxerr = 0;
     bigsint = cell(1,length(freqp));
     bigcost = cell(1,length(freqp));
 
     options = optimoptions(@fminimax, ...
                            'ConstraintTolerance', 1e-4, ...
                            'StepTolerance', 1e-16, ...
-                           'FunctionTolerance', 1e-32);
+                           'FunctionTolerance', 1e-4, ...
+                           'Display', 'off', ...
+                           'MaxFunctionEvaluations', 1e4, ...
+                           'MaxIterations', 1e4);
 
     %% step 2 solve the problem
-    while(length(coeff)<=16)
+    while(length(coeff)<16)
 
         % bigsint
         for i = 1:length(freqp)
@@ -67,26 +70,46 @@ function coeff = eqrpgdr(freqp, phred)
         efhandle = @(x)errfun(x,coeff,freqp,phred,bigsint,bigcost);
         nchandle = @(x)stbcon(x,coeff);
 
-        [newcoeff,newerr] = fminimax(efhandle,coeffinit,[],[],[],[],[],[],nchandle,options);
+        [newcoeff,newerr] = fminimax(efhandle,coeffinit,[],[],[],[],-2,+2,nchandle,options);
 
-% $$$         if(((max(olderr)-max(newerr))/max(olderr))<delta)
-% $$$             ((max(olderr)-max(newerr))/max(olderr))
-% $$$             break;
-% $$$         end
+        for x = -2:1e-16:2
+            curmaxerr = max(errfun(x,coeff,freqp,phred,bigsint,bigcost));
+
+            if(length(coeff) == 1)
+                stableflag = isstable(fliplr([1,x]),[1,x]);
+            else
+                stableflag = isstable( ...
+                    fliplr([1,coeff(2:length(coeff)),x]),[1,coeff(2:length(coeff)),x]);
+            end
+
+            if((curmaxerr < maxerr) && stableflag)
+                newcoeff = x;
+                maxerr = curmaxerr;
+            end
+
+        end
+
+        if( (( max(abs(olderr)) - max(abs(newerr)) )/ max(abs(newerr)) )<delta )
+            break;
+        end
 
         olderr = newerr;
+
         coeff = [coeff,newcoeff];
 
     end
 
+    a = [1,coeff(2:length(coeff))];
+    b = fliplr(a);
+    coeff = [b;a];
 
     %% APPENDiX the experation of error function for minimax algorithm('fminimax')
 
     % error function WITH UNKNOWN 'x' (anonymous)
     function err = errfun(x,coeff,freqp,phred,bigsint,bigcost)
         for i = 1:length(freqp)
-            err(i) = (-sin(0.5*(length(coeff)*freqp(i)+phred(i)))+bigsint{i}*[coeff,x]') ...
-                     / (abs(cos(0.5*(length(coeff)*freqp(i)+phred(i)))+bigcost{i}*[coeff,0]'));
+            err(i) = abs(-sin(0.5*(length(coeff)*freqp(i)+phred(i)))+bigsint{i}*[coeff,x]') ...
+                     / abs(cos(0.5*(length(coeff)*freqp(i)+phred(i)))+bigcost{i}*[coeff,0]');
         end
     end
 
@@ -94,7 +117,20 @@ function coeff = eqrpgdr(freqp, phred)
     % non-linear constraint for test the stability
     function [c,ceq] = stbcon(x,coeff)
         c = [];
-        ceq = isstable(fliplr([coeff,x]),[coeff,x]) - 1;
+        if(length(coeff) == 1)
+            ceq = 0;
+        else
+            ceq = isstable(fliplr([1,coeff(2:length(coeff)),x]),[1,coeff(2:length(coeff)),x]) - 1;
+        end
     end
 
 end
+
+
+% 1. how to process the first element of 'coeff' (that is 0) well..
+
+% 2. constraint from line 71 to 76 is a problem..
+
+% 3. why fminimax stopped so quickly..
+
+% 4. can the first point of 'freqp' be zero..
