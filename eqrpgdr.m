@@ -33,8 +33,8 @@ function coeff = eqrpgdr(freqp, phred)
     coeff = 0;
     olderr = inf;
     delta = 1e-16;
-    coeffinit = 1; % correct?
-    maxerr = 0;
+    maxerr = inf;
+
     bigsint = cell(1,length(freqp));
     bigcost = cell(1,length(freqp));
 
@@ -67,13 +67,15 @@ function coeff = eqrpgdr(freqp, phred)
             clear temp;
         end
 
-        efhandle = @(x)errfun(x,coeff,freqp,phred,bigsint,bigcost);
-        nchandle = @(x)stbcon(x,coeff);
+        tic
+        for x = -1.5:1e-3:1.5
 
-        [newcoeff,newerr] = fminimax(efhandle,coeffinit,[],[],[],[],-2,+2,nchandle,options);
+            fprintf('\nprocessing');
+            fprintf('%7.3f',[coeff,x]);
 
-        for x = -2:1e-16:2
             curmaxerr = max(errfun(x,coeff,freqp,phred,bigsint,bigcost));
+
+            fprintf(' #MAXERR curnt = %6.1f std = %6.1f',curmaxerr,maxerr);
 
             if(length(coeff) == 1)
                 stableflag = isstable(fliplr([1,x]),[1,x]);
@@ -85,16 +87,24 @@ function coeff = eqrpgdr(freqp, phred)
             if((curmaxerr < maxerr) && stableflag)
                 newcoeff = x;
                 maxerr = curmaxerr;
+                fprintf(' # refreshed!')
+            elseif((curmaxerr > maxerr))
+                break;
             end
-
         end
+        toc
 
-        if( (( max(abs(olderr)) - max(abs(newerr)) )/ max(abs(newerr)) )<delta )
+        newerr = maxerr;
+        maxerr = inf;
+
+        tol = (( max(abs(olderr)) - max(abs(newerr)) )/ max(abs(newerr)) );
+        if( tol <delta )
+            fprintf('\nstep out by error tolerance never changes!\n');
+            fprintf('error tolerance fail with %12.6f\n',tol);
             break;
         end
 
         olderr = newerr;
-
         coeff = [coeff,newcoeff];
 
     end
