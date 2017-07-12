@@ -1,4 +1,4 @@
-n%% Equiripple Group Delay Error Allpass Filters Designing
+%% Equiripple Group Delay Error Allpass Filters Designing
 %  log:
 %   version1:
 %    july 10, 2017
@@ -45,7 +45,7 @@ function coeff = eqrpgdr(freqp, phred)
                            'Display', 'off', ...
                            'MaxFunctionEvaluations', 1e4, ...
                            'MaxIterations', 1e4);
-
+tic
     %% step 2 solve the problem
     while(length(coeff)<16)
 
@@ -67,7 +67,6 @@ function coeff = eqrpgdr(freqp, phred)
             clear temp;
         end
 
-        tic
         for x = -1.5:1e-3:1.5
 
             fprintf('\nprocessing');
@@ -92,15 +91,14 @@ function coeff = eqrpgdr(freqp, phred)
                 break;
             end
         end
-        toc
 
         newerr = maxerr;
         maxerr = inf;
 
-        tol = ((max(abs(2*atan(olderr))) - max(abs(2*atan(newerr)))) ...
+        tol = ((max(abs(2*atan(newerr))) - max(abs(2*atan(olderr)))) ...
                / max(abs(2*atan(olderr))));
 
-        if(abs(tol) < delta)
+        if(tol < delta)
             fprintf('\nstep out by error tolerance never changes!\n');
             fprintf('error tolerance fail with %12.6f\n',tol);
             break;
@@ -110,7 +108,7 @@ function coeff = eqrpgdr(freqp, phred)
         coeff = [coeff,newcoeff];
 
     end
-
+toc
     a = [1,coeff(2:length(coeff))];
     b = fliplr(a);
     coeff = [b;a];
