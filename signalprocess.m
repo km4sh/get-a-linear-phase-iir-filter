@@ -47,8 +47,8 @@ tempdevbrir2 = devbrir2(cutrange);
 % $$$     plot(phasr{i});
 % $$$ end
 % $$$
-% $$$ figure;
-% $$$ for i = 1:length(phasr)
-% $$$     subplot(4,4,i);
-% $$$     plot(phasr{i}(:,1)-phasr{i}(:,2));
-% $$$ end
+figure;
+for i = 1:length(phasr)
+    subplot(4,4,i);
+    plot(phasr{i}(:,1)-phasr{i}(:,2));
+end

@@ -2,6 +2,6 @@
 
 freqp = (0:320)*pi/400;
 
-phred = -7.0615*freqp;
+phred = -3.2222*freqp;
 
 coeff = eqrpgdr(freqp,phred, 8);
