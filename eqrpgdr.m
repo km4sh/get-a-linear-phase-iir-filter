@@ -73,7 +73,7 @@ function coeff = eqrpgdr(freqp, phred, order)
 
         [coeff,newerr] = fminimax(efhandle,coeffinit,[],[],[],[],[],[],nchandle,options);
 
-        tol = ((max(abs(2*atan(olderr))) - max(abs(2*atan(newerr)))) ...
+        tol = ((max(abs(2*atan(newerr))) - max(abs(2*atan(olderr)))) ...
                / max(abs(2*atan(olderr))));
 
         olderr = newerr;
