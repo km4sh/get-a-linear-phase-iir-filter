@@ -24,8 +24,7 @@ devbrir2(winrange2) = rir2(winrange2).*hannwin;
 % $$$ %for j = 16384:512:32768-512
 % $$$ for j = 0:4096:65536-4096
 % $$$     fprintf('processing the %d case of window length..\n',i);
-j = 0;
-cutrange = 1:max(max(winrange1),max(winrange2))+j;
+cutrange = 1:max(max(winrange1),max(winrange2));
 % $$$
 tempdevbrir1 = devbrir1(cutrange);
 tempdevbrir2 = devbrir2(cutrange);
@@ -47,8 +46,8 @@ tempdevbrir2 = devbrir2(cutrange);
 % $$$     plot(phasr{i});
 % $$$ end
 % $$$
-figure;
-for i = 1:length(phasr)
-    subplot(4,4,i);
-    plot(phasr{i}(:,1)-phasr{i}(:,2));
-end
+% $$$ figure;
+% $$$ for i = 1:length(phasr)
+% $$$     subplot(4,4,i);
+% $$$     plot(phasr{i}(:,1)-phasr{i}(:,2));
+% $$$ end
